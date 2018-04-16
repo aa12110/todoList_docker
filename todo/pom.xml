@@ -55,6 +55,13 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.enigmabridge</groupId>
+            <artifactId>hibernate4-sqlite-dialect</artifactId>
+            <version>0.1.2</version>
+        </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -80,7 +87,12 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
         </dependency>
-
+        <!-- SQLite 驱动 -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.21.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -91,6 +103,42 @@
                 <configuration>
                     <!--开启热部署-->
                     <fork>true</fork>
+                </configuration>
+            </plugin>
+            <!-- 构建docker镜像 -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.2.2</version>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- image 的名字 -->
+                    <imageName>Todo</imageName>
+                    <!-- image 的tag, 可以是多个 -->
+                    <imageTags>
+                        <imageTag>latest</imageTag>
+                        <imageTag>0.0.1</imageTag>
+                    </imageTags>
+                    <!-- Dockerfile所在的目录 -->
+                    <dockerDirectory>/</dockerDirectory>
+                    <!-- 复制jar到docker的位置 -->
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <!--jar 包所在的路径，对应target目录-->
+                            <directory>/target</directory>
+                            <!-- 包含的jar　-->
+                            <include>todo-0.0.1-SNAPSHOT.jar</include>
+                        </resource>
+                    </resources>
                 </configuration>
             </plugin>
         </plugins>
